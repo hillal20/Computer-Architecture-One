@@ -29,7 +29,7 @@ can change based on the operands given to the `CMP` opcode.
 
 The register is made up of 8 bits. If a particular bit is set, that flag is "true".
 
-`FL` bits: `00000LGE`
+`FL` bits: `00000LGE`  
 
 * `L` Less-than: during a `CMP`, set to 1 if registerA is less than registerB,
   zero otherwise.

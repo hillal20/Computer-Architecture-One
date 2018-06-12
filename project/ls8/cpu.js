@@ -1,7 +1,16 @@
+
 /**
  * LS-8 v2.0 emulator skeleton code
  */
 
+
+const instruction = {
+    HLT: 1,
+    MUL: 170,
+    PRN: 67,
+    LDI: 153
+
+};
 /**
  * Class for simulating a simple Computer (CPU & memory)
  */
@@ -14,11 +23,11 @@ class CPU {
         this.ram = ram;
 
         this.reg = new Array(8).fill(0); // General-purpose registers R0-R7
-        
+
         // Special-purpose registers
         this.PC = 0; // Program Counter
     }
-    
+
     /**
      * Store value in memory address, useful for program loading
      */
@@ -54,8 +63,11 @@ class CPU {
      */
     alu(op, regA, regB) {
         switch (op) {
+
             case 'MUL':
-                // !!! IMPLEMENT ME
+                console.log('regA', regA)
+                console.log('regB', regB)
+                return (this.ram.read(regA) * this.ram.read(regB));
                 break;
         }
     }
@@ -69,27 +81,57 @@ class CPU {
         // index into memory of the instruction that's about to be executed
         // right now.)
 
-        // !!! IMPLEMENT ME
+        const IR = this.ram.read(this.PC);
+
 
         // Debugging output
-        //console.log(`${this.PC}: ${IR.toString(2)}`);
+        // console.log(`${this.PC}: ${IR.toString(2)}`);
 
         // Get the two bytes in memory _after_ the PC in case the instruction
         // needs them.
 
         // !!! IMPLEMENT ME
+        const b1 = this.ram.read(this.PC + 1);
+        const b2 = this.ram.read(this.PC + 2);
 
+        let continueNext = true;
         // Execute the instruction. Perform the actions for the instruction as
         // outlined in the LS-8 spec.
 
-        // !!! IMPLEMENT ME
+        switch (IR) {
+            case instruction.LDI:
+                this.ram.write(b1, b2);
+                break;
+            case instruction.PRN:
+                console.log(this.ram.read(b1));
+                break;
+            case instruction.MUL:
+                console.log('b1', b1);
+                console.log('b2', b2)
+                this.ram.write(b1, this.alu('MUL', b1, b2));
+                break;
+            case instruction.HLT:
+                this.stopClock();
+                break;
+            default:
+                this.stopClock();
+                console.log('error');
+        }
+
 
         // Increment the PC register to go to the next instruction. Instructions
         // can be 1, 2, or 3 bytes long. Hint: the high 2 bits of the
         // instruction byte tells you how many bytes follow the instruction byte
         // for any particular instruction.
-        
+
         // !!! IMPLEMENT ME
+
+        if (continueNext) {
+            let increment = IR.toString(2);
+            while (increment.length < 8) increment = "0" + increment;
+            console.log('i', increment);
+            this.PC = (this.PC + 1) + parseInt(increment.slice(0, 2), 2);
+        }
     }
 }
 
